@@ -1,0 +1,5 @@
+Flask App
+   ↓
+MySQL DB (local OR RDS)
+   ↓
+Docker + Jenkins ready
