@@ -62,6 +62,7 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
+		<th>Actions</th>
             </tr>
         </thead>
         <tbody id="dataTable"></tbody>
@@ -90,31 +91,86 @@ function addUser() {
     .then(msg => {
         alert(msg);
         document.getElementById('insertForm').reset();
-        loadUsers();
+        loadData();
     })
     .catch(err => console.error(err));
 }
 
-function loadUsers() {
-    fetch('/users')
-    .then(res => res.json())
+function editUser(id, name, email) {
+    const newName = prompt("Enter new name", name);
+    const newEmail = prompt("Enter new email", email);
+
+    if (!newName || !newEmail) return;
+
+    fetch(`/update_user/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: newName,
+            email: newEmail
+        })
+    })
+    .then(res => res.text())
     .then(data => {
-        const table = document.getElementById('dataTable');
-        table.innerHTML = '';
-
-        data.forEach(u => {
-            table.innerHTML += `
-                <tr>
-                    <td>${u.id}</td>
-                    <td>${u.name}</td>
-                    <td>${u.email}</td>
-                </tr>`;
-        });
-    })
-    .catch(err => console.error(err));
+        alert(data);
+        loadData();
+    });
 }
 
-window.onload = loadUsers;
+function deleteUser(id) {
+    if (!confirm("Delete this user?")) return;
+
+    fetch(`/delete_user/${id}`, {
+        method: 'DELETE'
+    })
+    .then(res => res.text())
+    .then(data => {
+        alert(data);
+        loadData();
+    });
+}
+
+function loadData() {
+    const dataTable = document.getElementById('dataTable');
+    dataTable.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+
+    fetch('/users')
+    .then(response => response.json())
+    .then(data => {
+        let rows = '';
+
+        data.forEach(record => {
+            rows += `
+            <tr>
+                <td>${record.id}</td>
+                <td>${record.name}</td>
+                <td>${record.email}</td>
+                <td>
+			<button type="button" class="btn btn-warning btn-sm me-2"
+			    onclick="editUser(${record.id}, \`${record.name}\`, \`${record.email}\`)">
+			    Edit
+			</button>
+
+			<button type="button" class="btn btn-danger btn-sm"
+			    onclick="deleteUser(${record.id})">
+			    Delete
+			</button>
+                </td>
+            </tr>
+            `;
+        });
+
+        dataTable.innerHTML = rows;
+    })
+    .catch(err => {
+        dataTable.innerHTML = '<tr><td colspan="4">Error loading data</td></tr>';
+        console.error(err);
+    });
+}
+
+window.onload = loadData;
 </script>
 
 </body>
