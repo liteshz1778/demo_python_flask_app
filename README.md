@@ -1,4 +1,4 @@
-# python-demo-flask-app
+# demo_python_flask_app
 This repo contains files related to python-demo-flask-app
 
 # docker image registry
