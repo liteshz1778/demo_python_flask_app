@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: mysql-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-db
+  template:
+    metadata:
+      name: mysql-db-pod
+      labels:
+        app: mysql-db
+    spec:
+      containers:
+        - name: mysql-db
+          image: mysql:8.4
+          env:
+            # - name: MYSQL_ROOT_PASSWORD
+            #  value: root
+
+            # Fetching secret from mysql-secret config
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_ROOT_PASSWORD
+
+            - name: MYSQL_DATABASE 
+              value: cloud
+
+          # Mounting Volume to emails.txt file
+          volumeMounts:
+            - name: mysql-db-vol
+              mountPath: /var/lib/mysql
+
+      # Attaching Volume to pod
+      volumes:
+        - name: mysql-db-vol
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-db-svc
+spec:
+  #type: LoadBalancer
+  selector:
+    app: mysql-db
+  ports:
+    - name: tcp
+      port: 3306
+      targetPort: 3306

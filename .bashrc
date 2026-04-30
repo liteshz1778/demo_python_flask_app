@@ -1,0 +1,6 @@
+alias kget="kubectl get"
+alias kdes="kubectl describe"
+alias kaply="kubectl apply" 
+alias kdel="kubectl delete"
+alias kcrt="kubectl create"
+alias kexp="kubectl explain"

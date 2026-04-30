@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: flask-webapp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-webapp
+  template:
+    metadata:
+      name: flask-webapp-pod
+      labels:
+        app: flask-webapp
+    spec:
+      containers:
+        - name: flask-webapp-container
+          image: liteshz/python-demo-flask-app:v16
+          env:
+            - name: DB_HOST
+              value: mysql-db-svc
+            - name: DB_USER 
+              value: root
+            - name: DB_PASSWORD
+              value: root
+            - name: DB_NAME
+              value: cloud
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-webapp-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: flask-webapp
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
