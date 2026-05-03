@@ -1,0 +1,29 @@
+# adding helm repo
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+# list out the helm repo
+helm repo list
+
+# create namespace
+kubectl create ns monitoring
+
+# create helm repo monitoring
+helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring -f ./custom_kube_prometheus_stack.yml
+
+kubectl get all -n monitoring
+
+# Access Prometheus UI 
+kubectl port-forward service/prometheus-operated -n monitoring 9090:9090
+
+# Access Grafana UI
+kubectl port-forward service/monitoring-grafana -n monitoring 8080:80
+
+# Access Prometheus Alert-Manager
+kubectl port-forward service/alertmanager-operated -n monitoring 9093:9093
+
+# uninstall/remove helm repo
+helm uninstall monitoring -n monitoring
+
+# remove ns
+k delete ns monitoring
