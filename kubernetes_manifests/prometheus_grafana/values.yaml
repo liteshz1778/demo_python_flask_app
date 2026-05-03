@@ -1,0 +1,21 @@
+alertmanager:
+  alertmanagerSpec:
+    alertmanagerConfigSelector:
+      matchLabels:
+        release: monitoring
+    replicas: 1
+    alertmanagerConfigMatcherStrategy:
+      type: None
+  service:
+    type: NodePort
+    nodePort: 30902
+
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 30901
+
+grafana:
+  service:
+    type: NodePort
+    nodePort: 30903
