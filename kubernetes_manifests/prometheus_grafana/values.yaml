@@ -3,7 +3,7 @@ alertmanager:
     alertmanagerConfigSelector:
       matchLabels:
         release: monitoring
-    replicas: 1
+    replicas: 2
     alertmanagerConfigMatcherStrategy:
       type: None
   service:
@@ -19,3 +19,7 @@ grafana:
   service:
     type: NodePort
     nodePort: 30903
+
+prometheus-node-exporter:
+  hostRootFsMount:
+    enabled: false

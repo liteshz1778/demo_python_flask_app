@@ -10,7 +10,7 @@ alertmanager:
     # Sets the number of Alertmanager replicas to 3 for high availability.
     # ✅ Solves error: Single replica can cause alerting issues during pod failures.
     # ✅ Solves error: Alertmanager Cluster Status is Disabled (GitHub issue)
-    replicas: 1
+    replicas: 2
 
     # Sets the strategy for matching Alertmanager configurations. 'None' means no specific matching strategy.
     # ✅ Solves error: Incorrect matcher strategy can lead to unhandled alert configurations.

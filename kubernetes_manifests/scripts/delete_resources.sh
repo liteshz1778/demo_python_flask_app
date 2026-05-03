@@ -1,3 +1,3 @@
 #!/bin/bash
 
-kubectl delete -f ../ --recursive
+kubectl delete -f ../demo-flask-app-kube-manifests --recursive
