@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, render_template, request
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 import pymysql
 import os
 import time
@@ -14,6 +15,17 @@ def get_db_connection():
 
     for i in range(retries):
         try:
+            # added for localhost testing
+            #conn = pymysql.connect(
+             #   host=os.getenv("DB_HOST", "localhost"),
+             #   user=os.getenv("DB_USER", "flaskuser"),
+             #   password=os.getenv("DB_PASSWORD", "flaskpass"),
+             #   db=os.getenv("DB_NAME", "cloud"),
+             #   port=int(os.getenv("DB_PORT", 3306)),
+             #   charset='utf8mb4',
+             #   cursorclass=pymysql.cursors.DictCursor
+            #)
+
             conn = pymysql.connect(
                 host=os.getenv("DB_HOST", "mysql-db"),
                 user=os.getenv("DB_USER", "root"),
@@ -75,6 +87,7 @@ def init_db():
 # =========================
 @app.route('/')
 def index():
+    APP_VISITS.inc()
     return render_template('index.html')
 
 
@@ -136,6 +149,52 @@ def delete_user(id):
     execute_query("DELETE FROM users WHERE id=%s", (id,))
     return jsonify({"message": "User deleted"})
 
+# =========================
+# 📊 Prometheus Metrics
+# =========================
+
+REQUEST_COUNT = Counter(
+    'flask_http_request_total',
+    'Total HTTP Requests',
+    ['method', 'endpoint', 'http_status']
+)
+
+REQUEST_LATENCY = Histogram(
+    'flask_http_request_duration_seconds',
+    'Request latency',
+    ['endpoint']
+)
+
+# Example custom metric
+APP_VISITS = Counter(
+    'flask_app_visits_total',
+    'Total visits to home page'
+)
+
+# =========================
+# ⏱️ Track request time
+# =========================
+
+@app.before_request
+def start_timer():
+    request.start_time = time.time()
+
+@app.after_request
+def log_request(response):
+    latency = time.time() - request.start_time
+
+    REQUEST_LATENCY.labels(request.path).observe(latency)
+    REQUEST_COUNT.labels(request.method, request.path, response.status_code).inc()
+
+    return response
+
+# =========================
+# 📊 Metrics Endpoint
+# =========================
+
+@app.route('/metrics')
+def metrics():
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 # =========================
 # START APP

@@ -3,7 +3,7 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm repo update
 
 # list out the helm repo
-helm repo list
+helm list -n monitoring
 
 # create namespace
 kubectl create ns monitoring
