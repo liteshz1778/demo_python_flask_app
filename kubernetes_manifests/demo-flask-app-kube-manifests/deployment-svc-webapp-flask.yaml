@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: flask-webapp-container
-          image: liteshz/python-demo-flask-app:v16
+          image: liteshz/python-demo-flask-app:v17
           env:
             - name: DB_HOST
               value: mysql-db-svc
@@ -31,6 +31,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: flask-webapp-svc
+  labels:
+    app: flask-webapp
 spec:
   type: LoadBalancer
   selector:

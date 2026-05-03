@@ -1,0 +1,36 @@
+1. Basic Checks
+Total requests (all time) --------> flask_http_request_total
+Total app visits (home page) --------> flask_app_visits_total
+
+2. Request Rate (most important)
+Requests per second (last 1 min) --------> rate(flask_http_request_total[10s])
+Spike detection --------> increase(flask_http_request_total[1m])
+Requests per second by endpoint --------> sum(rate(flask_http_request_total[1m])) by (endpoint)
+Requests per second by method (GET/POST) ---> sum(rate(flask_http_request_total[1m])) by (method)
+
+3. Error Monitoring
+4xx + 5xx errors ---> flask_http_request_total{http_status=~"4..|5.."}
+Error rate ----> sum(rate(flask_http_request_total{http_status=~"5.."}[1m]))/sum(rate(flask_http_request_total[1m]))
+
+4. Latency
+Average response time ----> rate(flask_http_request_duration_seconds_sum[1m])/rate(flask_http_request_duration_seconds_count[1m])
+Latency per endpoint
+sum(rate(flask_http_request_duration_seconds_sum[1m])) by (endpoint)/sum(rate(flask_http_request_duration_seconds_count[1m])) by (endpoint)
+95th percentile latency --------> histogram_quantile(0.95,  sum(rate(flask_http_request_duration_seconds_bucket[1m])) by (le, endpoint))
+
+
+5. Traffic Insights
+Most used endpoint ----> topk(5, sum(rate(flask_http_request_total[1m])) by (endpoint))
+Requests per status code --------> sum(rate(flask_http_request_total[1m])) by (http_status)
+Slow endpoints ---------> topk(3,  sum(rate(flask_http_request_duration_seconds_sum[1m])) by (endpoint))
+
+6. Test Queries (for your demo)
+Hit APIs:
+curl http://localhost:5000/curl http://localhost:5000/userscurl -X POST http://localhost:5000/add_user \  -H "Content-Type: application/json" \  -d '{"name":"Litesh","email":"litesh@test.com"}'
+
+& Then check:
+flask_http_request_total
+
+We will get labels like:
+method="GET"endpoint="/users"http_status="200"
+
