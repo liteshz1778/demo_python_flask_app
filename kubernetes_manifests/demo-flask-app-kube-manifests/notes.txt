@@ -1,0 +1,9 @@
+# Check whether svc is recogined by the service-monitor or not using below commands
+kubectl get endpoints flask-webapp-svc
+kubectl get svc flask-webapp-svc --show-labels
+kubectl get servicemonitor -n monitoring
+
+# Access the http://<public_ip>:5000/metrics to the metrics for our app
+# Access the prometheus sever followd by /targets endpoint to see whether our is configured as target for prometheues
+  http://<public_ip>:30901/targets
+# then we can check & validate the promql
