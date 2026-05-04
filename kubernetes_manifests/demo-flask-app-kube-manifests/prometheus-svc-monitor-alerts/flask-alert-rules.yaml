@@ -1,0 +1,41 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: flask-app-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: flask-app.rules
+      rules:
+
+        # 🚨 App Down
+        - alert: FlaskAppDown
+          expr: up{job="flask-webapp-monitor"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Flask app is DOWN"
+            description: "Flask app is not reachable by Prometheus"
+
+        # 🚨 High request rate
+        - alert: HighRequestRate
+          expr: rate(flask_http_request_total[1m]) > 5
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High traffic on Flask app"
+            description: "Request rate is above threshold"
+
+        # 🚨 High latency
+        - alert: HighLatency
+          expr: histogram_quantile(0.95, rate(flask_http_request_duration_seconds_bucket[5m])) > 1
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High latency detected"
+            description: "95th percentile latency > 1s"

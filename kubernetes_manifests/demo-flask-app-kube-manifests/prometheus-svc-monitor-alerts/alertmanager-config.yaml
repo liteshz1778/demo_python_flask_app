@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: AlertmanagerConfig
+metadata:
+  name: flask-alert-config
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  route:
+    receiver: email-notifications
+    groupBy: ['alertname']
+    groupWait: 30s
+    groupInterval: 1m
+    repeatInterval: 5m
+
+  receivers:
+    - name: email-notifications
+      emailConfigs:
+        - to: "liteshzadane1778@gmail.com"
+          from: "liteshzadane1778@gmail.com"
+          smarthost: "smtp.gmail.com:587"
+          authUsername: "liteshzadane1778@gmail.com"
+          authPassword:
+            name: smtp-secret
+            key: password
+          requireTLS: true
