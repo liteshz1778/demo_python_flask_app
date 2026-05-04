@@ -7,3 +7,6 @@ kubectl get servicemonitor -n monitoring
 # Access the prometheus sever followd by /targets endpoint to see whether our is configured as target for prometheues
   http://<public_ip>:30901/targets
 # then we can check & validate the promql
+
+# Access http://<public_ip>:30902/ ------------> for alerts webpage to track the different alerts are getting triggred
+# Access http://<public_ip>:30901/alerts --------> for alerting rule
