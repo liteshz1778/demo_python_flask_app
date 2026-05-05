@@ -1,0 +1,6 @@
+promtail:
+  config:
+    scrape_configs:
+      - job_name: kubernetes-pods
+        pipeline_stages:
+        - docker: {}
