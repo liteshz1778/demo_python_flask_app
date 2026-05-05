@@ -10,6 +10,7 @@ kubectl create ns monitoring
 
 # create helm repo monitoring
 helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring -f ./custom_kube_prometheus_stack.yml
+helm upgrade monitoring prometheus-community/kube-prometheus-stack -n monitoring -f ./custom_kube_prometheus_stack.yaml
 
 # Get all kube resources
 kubectl get all -n monitoring
@@ -23,9 +24,6 @@ kubectl port-forward service/monitoring-grafana -n monitoring 8080:80
 # Access Prometheus Alert-Manager
 kubectl port-forward service/alertmanager-operated -n monitoring 9093:9093
 
-# Access the promethus, grafana & alert-manager using NodePort SVC
-helm upgrade monitoring prometheus-community/kube-prometheus-stack -n monitoring -f values.yaml
-
 # To get Grafana admin passwd
 kubectl --namespace monitoring get secrets monitoring-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo 
 
@@ -34,4 +32,3 @@ helm uninstall monitoring -n monitoring
 
 # remove ns
 k delete ns monitoring
-
