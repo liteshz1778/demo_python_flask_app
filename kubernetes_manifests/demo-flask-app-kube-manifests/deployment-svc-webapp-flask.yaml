@@ -18,15 +18,12 @@ spec:
       containers:
         - name: flask-webapp-container
           image: liteshz/python-demo-flask-app:v17
-          env:
-            - name: DB_HOST
-              value: mysql-db-svc
-            - name: DB_USER 
-              value: root
-            - name: DB_PASSWORD
-              value: root
-            - name: DB_NAME
-              value: cloud
+          envFrom:
+            - configMapRef:
+                  name: webapp-mysql-cm
+            - secretRef:
+                name: mysql-secret
+
 ---
 
 apiVersion: v1

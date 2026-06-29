@@ -1,7 +1,7 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata: 
-  name: mysql-db-deployment
+  name: mysql-db-sts
 spec:
   replicas: 1
   selector:
@@ -35,19 +35,26 @@ spec:
             - name: mysql-db-vol
               mountPath: /var/lib/mysql
 
-      # Attaching Volume to pod
-      volumes:
-        - name: mysql-db-vol
-          persistentVolumeClaim:
-            claimName: mysql-pvc
+  # Attaching Volume to pod
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-db-vol
+      spec:
+        resources: 
+          requests: 
+            storage: 1Gi
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: "mysql-sc"
+
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-db-svc
+  name: mysql-db-headless-svc
 spec:
-  #type: LoadBalancer
+  clusterIP: None
   selector:
     app: mysql-db
   ports:
