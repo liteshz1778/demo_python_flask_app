@@ -261,7 +261,7 @@ bash ./delete_resources.sh
 ---
 
 📚 Kubernetes Concepts Covered
-
+```
 ✅ Deployments
 ✅ StatefulSets
 ✅ Services
@@ -272,7 +272,7 @@ bash ./delete_resources.sh
 ✅ ConfigMaps
 ✅ Secrets
 ✅ Automated Kubernetes Deployment
-
+```
 ---
 
 👨‍💻 Author
